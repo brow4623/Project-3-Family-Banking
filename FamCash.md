@@ -6,7 +6,7 @@ Next is the Factory contract, which creates all FamCash contracts. It sets up an
 
 
 ## Private Family Contract Properties
-- name - Contract's name
+- name - Token's name
 - members - List of family members
 - token - Token's title
 - symbol - Token's ticker symbol
