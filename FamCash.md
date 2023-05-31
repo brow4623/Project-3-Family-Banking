@@ -6,11 +6,10 @@ Next is the Factory contract, which creates all FamCash contracts. It sets up an
 
 
 ## Private Family Contract Properties
-- name - Token's name
-- members - List of family members
-- token - Token's title
+- name - token's name
 - symbol - Token's ticker symbol
 - supply - Number of tokens
+- members - List of family member wallet addresses
 
 
 ## Private Family Contract Functions
@@ -19,11 +18,10 @@ Next is the Factory contract, which creates all FamCash contracts. It sets up an
 - receive - Displays wallet address
 
 
-## Factory Deployer Contract Properties
-- 
+## Factory Contract Properties
+- onlyOwner - limits function execution to this cont
 
-## Factory Deployer Contract Functions
+## Factory Contract Functions
 - create - Creates a family contract
 - deploy - Deploys a family contract
 - transfer - Transfers ownership of a deployed contract
-- relenquish - Relenquises ownership of a deployed family contract
