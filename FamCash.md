@@ -1,8 +1,8 @@
-# FamCash
-We begin with the family contract. This contract is owned by a parent and allows them to mint a private family token. They provide a name, symbol, amount, and number of family members. Then, they pay the gas fee to mint their tokens and receive them in their wallet.
+# FamCash Concept
+We begin with the family contract. This contract is owned by a parent and allows them to mint a private  token. They provide a name, symbol, and amount. Then, they pay the gas fee to mint their tokens and receive them in their wallet. From there, they can be dispersed to others at their leisure.
 
 
-Next is the Factory contract, which creates all FamCash contracts. It is the Owner of all the contracts. It sets them up and deploys them for each new family.
+Next is the Factory contract, which creates all FamCash contracts. It sets up and deploys them for each new family and is the initial Owner of all the contracts, but transfers ownership to the parent's wallet address upon creation of each contract.
 
 
 ## Private Family Contract Properties
