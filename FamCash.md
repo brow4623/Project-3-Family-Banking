@@ -14,9 +14,6 @@ Next is the Factory contract, which creates all FamCash contracts. It is the Own
 
 
 ## Private Family Contract Functions
-- addGrandparent - Prompts user to add a grandparent
-- addParent - Prompts user to add a parent
-- addChild - Prompts user to add a child
 - mint - Creates tokens (Restricted to parents)
 - send - Begins sending process
 - receive - Displays wallet address
