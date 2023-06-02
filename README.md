@@ -8,12 +8,11 @@ The objective of this project is to use Ethereum smart contracts to onboard fami
 
 ## How It Works
 
+We begin with the family contract. This contract is owned by a parent and allows them to mint a private  token. They provide their wallet address, a token name, and a token ticker symbol. Then, they pay the gas fee to mint their tokens and receive them in their wallet. From there, they can add new family members by using the addParent or addMember options and disperse tokens to them at their leisure. The difference between parents and members is that parents can mint new tokens while members cannot. This is by design so parents can restrict their young ones from minting tokens.
+
 ![Flow Chart](FlowChart.png)
 
-We begin with the family contract. This contract is owned by a parent and allows them to mint a private  token. They provide a name, symbol, and amount. Then, they pay the gas fee to mint their tokens and receive them in their wallet. From there, they can be dispersed to others at their leisure.
-
-
-Next is the Factory contract, which creates all FamCash contracts. It sets up and deploys them for each new family and is the initial Owner of all the contracts, but transfers ownership to the parent's wallet address upon creation of each contract.
+Next, there's the FamCash Factory contract, which simply takes the wallet address, token name, and token ticker provided by parents and creates their new FamCash contracts.
 
 
 ## FamCash Contract Properties
@@ -29,7 +28,7 @@ Next is the Factory contract, which creates all FamCash contracts. It sets up an
 - addMember - Adds a wallet address and grants it Member role.
 
 
-## Factory Contract Functions
+## FamCash Factory Contract Functions
 - NewFamCash - Creates an empty array to store all contracts. Creates a new FamCash contract by taking in user-specified values to set as contractOwner, tokenName, and tokenTicker. Then, adds each new contract to the empty array.
 
 ---
