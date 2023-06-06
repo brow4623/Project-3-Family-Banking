@@ -4,25 +4,25 @@
 pragma solidity ^0.8.0;
 
 // Imports
-import "./FamCash.sol";
+import "./FamCashDuo.sol";
 
-// Create contract: FamCashFactory
-contract FamCashFactory {
+// Create contract: FamCashDuoFactory
+contract FamCashDuoFactory {
 
     // Array of Contracts
-    FamCash[] public FamCashContracts;
+    FamCashDuo[] public FamCashDuoContracts;
 
-    // NewFamCash Function - Creates new FamCash contract
-    function NewFamCash(
+    // NewFamCashDuo Function - Creates new FamCash contract
+    function NewFamCashDuo(
         address _contractOwner,
         string memory _tokenName,
         string memory _tokenTicker)
         public {
 
         // Contract Initialization - Sets token name & ticker
-        FamCash famcash = new FamCash(_contractOwner, _tokenName, _tokenTicker);
+        FamCashDuo famcashduo = new FamCash(_contractOwner, _tokenName, _tokenTicker);
 
         // Array Update - Adds created contract to FamCash array
-        FamCashContracts.push(famcash);
+        FamCashDuoContracts.push(famcashduo);
     }
 }

@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract FamCashDuo is ERC20, AccessControl {
 
     // Role Identifiers - Creates roles for limiting specific functionality
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PARENT_ROLE = keccak256("PARENT_ROLE");
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
 
@@ -38,7 +37,7 @@ contract FamCashDuo is ERC20, AccessControl {
     // Add Second Parent Function
     function addSecondParent(address parent) public onlyRole(PARENT_ROLE) {
         require(_parent2 == address(0), "Second parent already exists.");
-        require(parent != _parent1, "Parent already added as the first parent.");
+        require(parent != _parent1, "You're already added as the first parent.");
 
         _parent2 = parent;
         _parentSignatures[_parent2] = false;
@@ -49,15 +48,13 @@ contract FamCashDuo is ERC20, AccessControl {
     // BothParentsSigned Modifier - Requires both parents' signatures to execute
     modifier bothParentsSigned() {
         require(_parentSignatures[_parent1] && _parentSignatures[_parent2],
-        "Both parents must sign off."
-        );
+        "Both parents must sign off.");
         _;
     }
 
     // OnlyParent Modifier - Requires the PARENT_ROLE to execute
     modifier onlyParent() { require(hasRole(PARENT_ROLE, msg.sender),
-        "Only a parent can do this."
-        );
+        "Only a parent can do this.");
         _;
     }
 
@@ -75,8 +72,13 @@ contract FamCashDuo is ERC20, AccessControl {
         _grantRole(MEMBER_ROLE, member);
     }
 
-    // Transfer Allowance Function - Transfers allowance to the child
-    function transferAllowance(address to, uint256 amount) external onlyParent bothParentsSigned {
+    // Set an allowance amount
+    function setAllowance(uint256 allowanceAmount) public onlyParent {
+        allowance = allowanceAmount;
+    }
+
+    // Pay Allowance Function - Transfers allowance to a child
+    function payAllowance(address to, uint256 allowance) external onlyParent bothParentsSigned {
 
         // Reset parent signatures for the next transfer
         _parentSignatures[_parent1] = false;
