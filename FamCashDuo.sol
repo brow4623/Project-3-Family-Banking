@@ -8,17 +8,22 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // Contract: FamCash
-contract FamCash is ERC20, AccessControl {
-    // Role Identifiers
+contract FamCashDuo is ERC20, AccessControl {
+
+    // Role Identifiers - Creates roles for limiting specific functionality
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PARENT_ROLE = keccak256("PARENT_ROLE");
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
 
-    // Parent Signatures
+    // Parent addresses
+    address private _parent1;
+    address private _parent2;
+
+    // Parent Signatures Mapping
     mapping(address => bool) private _parentSignatures;
 
-    // Constructor
     constructor(address contractOwner, string memory tokenName, string memory tokenTicker)
-        ERC20(tokenName, tokenTicker)
+    ERC20(tokenName, tokenTicker)
     {
         // Role Assignments
         _setupRole(DEFAULT_ADMIN_ROLE, contractOwner);
@@ -28,12 +33,6 @@ contract FamCash is ERC20, AccessControl {
         // Set contract owner as parent1
         _parent1 = contractOwner;
         _parentSignatures[_parent1] = false;
-    }
-
-    // Modifier: Requires both parents to have signed off
-    modifier requireBothParentsSigned() {
-        require(_parentSignatures[_parent1] && _parentSignatures[_parent2], "Both parents must sign off.");
-        _;
     }
 
     // Add Second Parent Function
@@ -47,9 +46,48 @@ contract FamCash is ERC20, AccessControl {
         _grantRole(MEMBER_ROLE, parent);
     }
 
-    // Transfer Allowance Function
-    function transferAllowance(address recipient, uint256 amount) public requireBothParentsSigned {
-        // Perform the transfer here
-        transfer(recipient, amount);
+    // BothParentsSigned Modifier - Requires both parents' signatures to execute
+    modifier bothParentsSigned() {
+        require(_parentSignatures[_parent1] && _parentSignatures[_parent2],
+        "Both parents must sign off."
+        );
+        _;
+    }
+
+    // OnlyParent Modifier - Requires the PARENT_ROLE to execute
+    modifier onlyParent() { require(hasRole(PARENT_ROLE, msg.sender),
+        "Only a parent can do this."
+        );
+        _;
+    }
+
+    // Mint Function - Mints new tokens
+    function mint(address recipient, uint256 amount) public onlyRole(PARENT_ROLE) {
+
+        // _mint - Sends specified token amount to specified recipient
+        _mint(recipient, amount);
+    }
+
+    // AddMember Function - Adds new family member
+    function addMember(address member) public onlyRole(PARENT_ROLE) {
+
+        // Grant member role to address
+        _grantRole(MEMBER_ROLE, member);
+    }
+
+    // Transfer Allowance Function - Transfers allowance to the child
+    function transferAllowance(address to, uint256 amount) external onlyParent bothParentsSigned {
+
+        // Reset parent signatures for the next transfer
+        _parentSignatures[_parent1] = false;
+        _parentSignatures[_parent2] = false;
+
+        // Transfer the allowance to the address (child or member)
+        _transfer(msg.sender, to, amount);
+    }
+
+    // Set Parent Signature Function - Sets the parent's signature status
+    function setParentSignature(bool hasSigned) external onlyParent {
+        _parentSignatures[msg.sender] = hasSigned;
     }
 }
