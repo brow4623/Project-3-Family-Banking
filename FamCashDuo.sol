@@ -95,12 +95,9 @@ contract FamCashDuo is ERC20, AccessControl {
         // Reset parent signatures for the next transfer
         _parentSignatures[_parent1] = false;
         _parentSignatures[_parent2] = false;
-        
-        // Set allowance amount
-        uint256 allowance = allowanceAmount;
 
         // Transfer the allowance to the address (child or member)
-        _transfer(msg.sender, to, allowance);
+        _transfer(msg.sender, to, allowanceAmount);
     }
 
     // Set Parent Signature Function - Sets the parent's signature status
