@@ -21,7 +21,13 @@ contract FamCashDuo is ERC20, AccessControl {
     // Parent Signatures Mapping
     mapping(address => bool) private _parentSignatures;
 
-    constructor(address contractOwner, string memory tokenName, string memory tokenTicker)
+    // Maximum Supply Limit
+    uint256 public maxSupplyLimit = 1000000;
+
+    constructor(
+        address contractOwner,
+        string memory tokenName,
+        string memory tokenTicker)
     ERC20(tokenName, tokenTicker)
     {
         // Role Assignments
@@ -61,12 +67,23 @@ contract FamCashDuo is ERC20, AccessControl {
     // Mint Function - Mints new tokens
     function mint(address recipient, uint256 amount) public onlyRole(PARENT_ROLE) {
 
+        // Input validation
+        require(recipient != address(0), "Invalid recipient address");
+        require(amount > 0, "Amount must be greater than zero");
+        
+        // Total supply limit check
+        uint256 totalSupplyAfterMint = totalSupply() + amount;
+        require(totalSupplyAfterMint <= maxSupplyLimit, "Exceeds limit");
+
         // _mint - Sends specified token amount to specified recipient
         _mint(recipient, amount);
     }
 
     // AddMember Function - Adds new family member
     function addMember(address member) public onlyRole(PARENT_ROLE) {
+
+        // Check if address is already a member
+        require(!hasRole(MEMBER, member), "Address is already a member");
 
         // Grant member role to address
         _grantRole(MEMBER_ROLE, member);
