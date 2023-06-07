@@ -22,10 +22,22 @@ contract FamCash is ERC20, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, contractOwner);
         _grantRole(PARENT, contractOwner);
         _grantRole(MEMBER, contractOwner);
+        
+        // Maximum Supply Limit
+        uint256 maxSupplyLimit = 1000000;
     }
     
     // Mint Function - Mints new tokens
     function mint(address recipient, uint amount) public onlyRole(PARENT) {
+        
+        // Input validation
+        require(recipient != address(0), "Invalid recipient address");
+        require(amount > 0, "Amount must be greater than zero");
+        
+        // Total supply limit check
+        uint256 totalSupplyAfterMint = totalSupply() + amount;
+        require(totalSupplyAfterMint <= maxSupplyLimit, "Exceeds max supply limit");
+    
         // _mint - Sends specified token amount to specified recipient
         _mint(recipient, amount);
     }
