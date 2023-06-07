@@ -34,7 +34,6 @@ contract FamCash is ERC20, AccessControl {
     function addParent(address parent) public onlyRole(PARENT) {
         // Assign PARENT & MINTER roles to specified member
         _grantRole(PARENT, parent);
-        _grantRole(MINTER, parent);
     }
 
     // AddMember Function - Adds new family member
