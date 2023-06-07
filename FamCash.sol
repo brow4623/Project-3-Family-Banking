@@ -13,6 +13,9 @@ contract FamCash is ERC20, AccessControl {
     // Role Identifiers - Creates roles for limiting specific functionality
     bytes32 public constant PARENT = keccak256("PARENT");
     bytes32 public constant MEMBER = keccak256("MEMBER");
+    
+    // Maximum Supply Limit
+    uint256 public maxSupplyLimit = 1000000;
 
     // Constructor Implementation - Sets name & ticker; Assigns roles to msg.sender
     constructor(address contractOwner, string memory tokenName, string memory tokenTicker)
@@ -22,9 +25,6 @@ contract FamCash is ERC20, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, contractOwner);
         _grantRole(PARENT, contractOwner);
         _grantRole(MEMBER, contractOwner);
-        
-        // Maximum Supply Limit
-        uint256 maxSupplyLimit = 1000000;
     }
     
     // Mint Function - Mints new tokens
