@@ -83,26 +83,24 @@ contract FamCashDuo is ERC20, AccessControl {
     function addMember(address member) public onlyRole(PARENT_ROLE) {
 
         // Check if address is already a member
-        require(!hasRole(MEMBER, member), "Address is already a member");
+        require(!hasRole(MEMBER_ROLE, member), "Address is already a member");
 
         // Grant member role to address
         _grantRole(MEMBER_ROLE, member);
     }
 
-    // Set an allowance amount
-    function setAllowance(uint256 allowanceAmount) public onlyParent {
-        allowance = allowanceAmount;
-    }
-
     // Pay Allowance Function - Transfers allowance to a child
-    function payAllowance(address to, uint256 allowance) external onlyParent bothParentsSigned {
+    function payAllowance(address to, uint256 allowanceAmount) external onlyParent bothParentsSigned {
 
         // Reset parent signatures for the next transfer
         _parentSignatures[_parent1] = false;
         _parentSignatures[_parent2] = false;
+        
+        // Set allowance amount
+        uint256 allowance = allowanceAmount;
 
         // Transfer the allowance to the address (child or member)
-        _transfer(msg.sender, to, amount);
+        _transfer(msg.sender, to, allowance);
     }
 
     // Set Parent Signature Function - Sets the parent's signature status
