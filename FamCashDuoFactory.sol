@@ -20,7 +20,7 @@ contract FamCashDuoFactory {
         public {
 
         // Contract Initialization - Sets token name & ticker
-        FamCashDuo famcashduo = new FamCash(_contractOwner, _tokenName, _tokenTicker);
+        FamCashDuo famcashduo = new FamCashDuo(_contractOwner, _tokenName, _tokenTicker);
 
         // Array Update - Adds created contract to FamCash array
         FamCashDuoContracts.push(famcashduo);
