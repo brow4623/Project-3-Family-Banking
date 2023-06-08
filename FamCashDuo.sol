@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract FamCashDuo is ERC20, AccessControl {
 
     // Role Identifiers - Creates roles for limiting specific functionality
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PARENT_ROLE = keccak256("PARENT_ROLE");
     bytes32 public constant MEMBER_ROLE = keccak256("MEMBER_ROLE");
 
@@ -22,7 +21,13 @@ contract FamCashDuo is ERC20, AccessControl {
     // Parent Signatures Mapping
     mapping(address => bool) private _parentSignatures;
 
-    constructor(address contractOwner, string memory tokenName, string memory tokenTicker)
+    // Maximum Supply Limit
+    uint256 public maxSupplyLimit = 1000000;
+
+    constructor(
+        address contractOwner,
+        string memory tokenName,
+        string memory tokenTicker)
     ERC20(tokenName, tokenTicker)
     {
         // Role Assignments
@@ -38,7 +43,7 @@ contract FamCashDuo is ERC20, AccessControl {
     // Add Second Parent Function
     function addSecondParent(address parent) public onlyRole(PARENT_ROLE) {
         require(_parent2 == address(0), "Second parent already exists.");
-        require(parent != _parent1, "Parent already added as the first parent.");
+        require(parent != _parent1, "You're already added as the first parent.");
 
         _parent2 = parent;
         _parentSignatures[_parent2] = false;
@@ -49,20 +54,26 @@ contract FamCashDuo is ERC20, AccessControl {
     // BothParentsSigned Modifier - Requires both parents' signatures to execute
     modifier bothParentsSigned() {
         require(_parentSignatures[_parent1] && _parentSignatures[_parent2],
-        "Both parents must sign off."
-        );
+        "Both parents must sign off.");
         _;
     }
 
     // OnlyParent Modifier - Requires the PARENT_ROLE to execute
     modifier onlyParent() { require(hasRole(PARENT_ROLE, msg.sender),
-        "Only a parent can do this."
-        );
+        "Only a parent can do this.");
         _;
     }
 
     // Mint Function - Mints new tokens
     function mint(address recipient, uint256 amount) public onlyRole(PARENT_ROLE) {
+
+        // Input validation
+        require(recipient != address(0), "Invalid recipient address");
+        require(amount > 0, "Amount must be greater than zero");
+        
+        // Total supply limit check
+        uint256 totalSupplyAfterMint = totalSupply() + amount;
+        require(totalSupplyAfterMint <= maxSupplyLimit, "Exceeds limit");
 
         // _mint - Sends specified token amount to specified recipient
         _mint(recipient, amount);
@@ -71,19 +82,22 @@ contract FamCashDuo is ERC20, AccessControl {
     // AddMember Function - Adds new family member
     function addMember(address member) public onlyRole(PARENT_ROLE) {
 
+        // Check if address is already a member
+        require(!hasRole(MEMBER_ROLE, member), "Address is already a member");
+
         // Grant member role to address
         _grantRole(MEMBER_ROLE, member);
     }
 
-    // Transfer Allowance Function - Transfers allowance to the child
-    function transferAllowance(address to, uint256 amount) external onlyParent bothParentsSigned {
+    // Pay Allowance Function - Transfers allowance to a child
+    function payAllowance(address to, uint256 allowanceAmount) external onlyParent bothParentsSigned {
 
         // Reset parent signatures for the next transfer
         _parentSignatures[_parent1] = false;
         _parentSignatures[_parent2] = false;
 
         // Transfer the allowance to the address (child or member)
-        _transfer(msg.sender, to, amount);
+        _transfer(msg.sender, to, allowanceAmount);
     }
 
     // Set Parent Signature Function - Sets the parent's signature status
