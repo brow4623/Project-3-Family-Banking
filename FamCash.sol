@@ -52,7 +52,7 @@ contract FamCash is ERC20, AccessControl {
     // Send Function - Sends tokens to a recipient
     function send(address recipient, uint256 amount) public onlyFamily {
         
-        // Token transfer
+        // Transfer
         _transfer(msg.sender, recipient, amount);
     }
 
