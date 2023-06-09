@@ -14,6 +14,13 @@ contract FamCash is ERC20, AccessControl {
     bytes32 public constant PARENT = keccak256("PARENT");
     bytes32 public constant MEMBER = keccak256("MEMBER");
     
+    // OnlyFamily Modifier - Limits sending to family members
+    modifier onlyFamily() {
+    require(hasRole(PARENT, msg.sender) || hasRole(MEMBER, msg.sender),
+    "Only family members can send tokens.");
+    _;
+}
+    
     // Maximum Supply Limit
     uint256 public maxSupplyLimit = 1000000;
 
@@ -28,7 +35,7 @@ contract FamCash is ERC20, AccessControl {
     }
     
     // Mint Function - Mints new tokens
-    function mint(address recipient, uint amount) public onlyRole(PARENT) {
+    function mint(address recipient, uint256 amount) public onlyRole(PARENT) {
         
         // Input validation
         require(recipient != address(0), "Invalid recipient address");
@@ -40,6 +47,13 @@ contract FamCash is ERC20, AccessControl {
     
         // _mint - Sends specified token amount to specified recipient
         _mint(recipient, amount);
+    }
+    
+    // Send Function - Sends tokens to a recipient
+    function send(address recipient, uint256 amount) public onlyFamily {
+        
+        // Token transfer
+        _transfer(msg.sender, recipient, amount);
     }
 
     // AddParent Function - Adds new parent
