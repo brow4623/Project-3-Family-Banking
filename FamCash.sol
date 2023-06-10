@@ -16,10 +16,12 @@ contract FamCash is ERC20, AccessControl {
     
     // OnlyFamily Modifier - Limits sending to family members
     modifier onlyFamily() {
-    require(hasRole(PARENT, msg.sender) || hasRole(MEMBER, msg.sender),
-    "Only family members can send tokens.");
-    _;
-}
+
+        // Checks to ensure address is a family member
+        require(hasRole(PARENT, msg.sender) || hasRole(MEMBER, msg.sender),
+        "Only family members can send tokens.");
+        _;
+    }
     
     // Maximum Supply Limit
     uint256 public maxSupplyLimit = 1000000;
@@ -37,12 +39,14 @@ contract FamCash is ERC20, AccessControl {
     // Mint Function - Mints new tokens
     function mint(address recipient, uint256 amount) public onlyRole(PARENT) {
         
-        // Input validation
+        // Input validation - Checks for valid address and amount
         require(recipient != address(0), "Invalid recipient address");
         require(amount > 0, "Amount must be greater than zero");
         
-        // Total supply limit check
+        // Total Supply - Sets the supply by adding the amount
         uint256 totalSupplyAfterMint = totalSupply() + amount;
+
+        // Post-Mint Check - Stops request from exceeding the minting limit
         require(totalSupplyAfterMint <= maxSupplyLimit, "Exceeds max supply limit");
     
         // _mint - Sends specified token amount to specified recipient
@@ -52,7 +56,7 @@ contract FamCash is ERC20, AccessControl {
     // Send Function - Sends tokens to a recipient
     function send(address recipient, uint256 amount) public onlyFamily {
         
-        // Transfer
+        // Transfer - Transfers tokens from sender to recipient
         _transfer(msg.sender, recipient, amount);
     }
 
